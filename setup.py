@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dubboclient",
-    version="1.0.1",
+    version="1.0.2",
     keywords=["pip", "dubboclient", "DubboClient", "dubbo"],
     description="A client tool for testing the Dubbo API",
     long_description="A client tool based on the telnetlib library for testing the Dubbo API",
