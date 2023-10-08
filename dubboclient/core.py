@@ -1,5 +1,6 @@
 import json
 import telnetlib
+import logging
 
 
 class DubboClient:
@@ -22,16 +23,16 @@ class DubboClient:
         """
         # 处理参数
         new_args = self._deal_args(args)
-        print("new_args==", new_args)
+        logging.info(f"new_args=={new_args}")
 
         # 调用接口
         command = "invoke {}.{}({})\n".format(service_name, method_name, new_args)
-        print("command==", command)
+        logging.info(f"command=={command}")
         self.telnet.write(command.encode())
 
         # 读取响应数据
         response_data = self.telnet.read_until("dubbo>".encode())
-        print("response_data==", response_data)
+        logging.info(f"response_data=={response_data}")
 
         # 处理响应数据
         data = self._deal_response_data(response_data)
@@ -40,7 +41,15 @@ class DubboClient:
     @staticmethod
     def _deal_response_data(response_data):
         """处理响应数据"""
-        return response_data.decode().split()[0]
+        all_data = response_data.decode()
+        # 成功
+        if "result:" in all_data:
+            for line in all_data.split("\r\n"):
+                if line.startswith("result:"):
+                    data = line[8:]
+                    return json.loads(data)
+        else:
+            return all_data
 
     @staticmethod
     def _deal_args(args):
